@@ -1,6 +1,5 @@
 # Практична робота №2 — Volumes та Networks
 
-**Дисципліна:** Вступ до DevOps  
 **Варіант 2:** `postgres:15-alpine` (Named Volume) + `nginx:alpine` (Bind Mount); мережева видимість — `nc -zv db 5432`.
 
 Стек із двох контейнерів у власній Docker-мережі. Доводимо: (1) застосунок бачить базу за іменем `db`, (2) дані бази переживають видалення контейнера, (3) зміни коду видно одразу без перезбірки образу.
@@ -51,6 +50,3 @@ docker exec -it db psql -U postgres -c "SELECT * FROM test;"
 docker run --rm --name pyapp --network app-net -v "${PWD}:/app" -w /app python:3.12-alpine sh -c "pip install -q pg8000 && python app.py"
 ```
 ![app.py](screenshots/04-app-py.png)
-
-## 7. Пояснення
-Дані вижили, бо вони зберігаються не у файловій системі контейнера, а в Named Volume `db_data`, яким керує Docker і який існує окремо від життєвого циклу контейнера. Команда `docker rm -f db` видаляє лише контейнер, але не том. Новий контейнер, змонтувавши той самий `db_data` у `/var/lib/postgresql/data`, одразу побачив старі файли бази.
